@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+.next
+out
+build
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Turbo
+.turbo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code memory (local only)
+.claude/
+
+# Prisma — keep migration files, only ignore local shadow db
+apps/api/prisma/migrations/migration_lock.toml

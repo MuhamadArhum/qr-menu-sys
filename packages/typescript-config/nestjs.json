@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "target": "ES2021",
+    "lib": ["ES2021"],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  }
+}

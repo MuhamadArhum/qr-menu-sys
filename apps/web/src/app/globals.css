@@ -1,0 +1,48 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --char: #1c1710;
+  --cream: #fff7ea;
+  --paper: #fffdf8;
+  --chili: #ff4630;
+  --mango: #ffa930;
+  --lime: #8fa300;
+  --char-60: #1c171099;
+  --char-20: #1c171033;
+  --char-10: #1c17101a;
+  --chili-10: #ff46301a;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background-color: var(--paper);
+    color: var(--char);
+    font-family: "Work Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 800;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .font-mono-price {
+    font-family: "JetBrains Mono", monospace;
+  }
+}

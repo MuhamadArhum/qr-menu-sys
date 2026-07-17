@@ -1,0 +1,116 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --char: #1c1710;
+  --cream: #fff7ea;
+  --paper: #fffdf8;
+  --chili: #ff4630;
+  --mango: #ffa930;
+  --lime: #8fa300;
+  --char-80: #1c1710cc;
+  --char-60: #1c171099;
+  --char-30: #1c17104d;
+  --char-15: #1c171026;
+  --char-08: #1c171014;
+  --chili-10: #ff46301a;
+  --chili-20: #ff463033;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--paper);
+    color: var(--char);
+    font-family: "Work Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 800;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-5 py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2;
+    background: var(--chili);
+    color: #fff;
+    font-family: "Space Grotesk", sans-serif;
+    box-shadow: 0 2px 8px rgba(255,70,48,0.30);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #e8351f;
+    box-shadow: 0 4px 14px rgba(255,70,48,0.40);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(255,70,48,0.25);
+  }
+  .btn-secondary {
+    @apply px-5 py-2.5 rounded-xl font-bold text-sm transition-all inline-flex items-center justify-center gap-2;
+    background: var(--paper);
+    color: var(--char);
+    border: 1.5px solid var(--char-30);
+    font-family: "Space Grotesk", sans-serif;
+  }
+  .btn-secondary:hover {
+    background: var(--cream);
+    border-color: var(--char-60);
+  }
+  .btn-danger {
+    @apply px-5 py-2.5 rounded-xl font-bold text-sm transition-all inline-flex items-center justify-center gap-2;
+    background: rgba(255,70,48,0.08);
+    color: var(--chili);
+    border: 1.5px solid rgba(255,70,48,0.25);
+    font-family: "Space Grotesk", sans-serif;
+  }
+  .btn-danger:hover {
+    background: rgba(255,70,48,0.15);
+    border-color: var(--chili);
+  }
+  .input {
+    @apply w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all;
+    background: var(--paper);
+    border: 1.5px solid var(--char-30);
+    color: var(--char);
+    font-family: "Work Sans", sans-serif;
+  }
+  .input::placeholder { color: var(--char-60); }
+  .input:focus {
+    border-color: var(--chili);
+    box-shadow: 0 0 0 3px rgba(255,70,48,0.12);
+  }
+  .label {
+    @apply block text-sm font-semibold mb-1.5;
+    color: var(--char);
+    font-family: "Space Grotesk", sans-serif;
+  }
+  .card {
+    @apply rounded-2xl;
+    background: var(--paper);
+    border: 1.5px solid var(--char-15);
+  }
+  .page-header { @apply mb-8; }
+  .page-title {
+    @apply text-2xl;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 800;
+    color: var(--char);
+  }
+  .page-subtitle {
+    @apply text-sm mt-1;
+    color: var(--char-60);
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .font-grotesk { font-family: "Space Grotesk", sans-serif; }
+  .font-mono-price { font-family: "JetBrains Mono", monospace; }
+}
