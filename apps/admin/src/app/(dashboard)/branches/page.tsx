@@ -325,9 +325,9 @@ export default function BranchesPage() {
                             style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)", color: "var(--char)" }}>
                             <span className="w-5 h-5 rounded-lg flex items-center justify-center text-[10px] font-black"
                               style={{ background: "#3B82F6", color: "#fff" }}>
-                              {m.email[0].toUpperCase()}
+                              {m.email?.[0]?.toUpperCase() ?? "?"}
                             </span>
-                            {m.email.split("@")[0]}
+                            {m.email?.split("@")[0]}
                             <button
                               onClick={() => removeManagerMutation.mutate({ branchId: branch.id, managerId: m.id })}
                               className="ml-1 opacity-50 hover:opacity-100 transition-opacity"

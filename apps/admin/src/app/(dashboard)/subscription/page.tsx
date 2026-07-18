@@ -17,12 +17,14 @@ interface Subscription {
   };
 }
 
-const STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
-  ACTIVE:    { bg: "rgba(143,163,0,0.1)",  color: "var(--lime)",  label: "Active"    },
-  EXPIRED:   { bg: "rgba(255,70,48,0.1)",  color: "var(--chili)", label: "Expired"   },
+type StatusStyle = { bg: string; color: string; label: string };
+const STATUS_STYLE: Partial<Record<string, StatusStyle>> = {
+  ACTIVE:    { bg: "rgba(143,163,0,0.1)",  color: "var(--lime)",    label: "Active"    },
+  EXPIRED:   { bg: "rgba(255,70,48,0.1)",  color: "var(--chili)",   label: "Expired"   },
   CANCELLED: { bg: "var(--char-08)",       color: "var(--char-60)", label: "Cancelled" },
-  TRIAL:     { bg: "rgba(59,130,246,0.1)", color: "#3B82F6",      label: "Trial"     },
+  TRIAL:     { bg: "rgba(59,130,246,0.1)", color: "#3B82F6",        label: "Trial"     },
 };
+const DEFAULT_STATUS_STYLE: StatusStyle = { bg: "rgba(143,163,0,0.1)", color: "var(--lime)", label: "Active" };
 
 function daysRemaining(endDate: string): number {
   return Math.ceil((new Date(endDate).getTime() - Date.now()) / 86_400_000);
@@ -99,7 +101,7 @@ export default function SubscriptionPage() {
   const totalDays = Math.ceil(
     (new Date(sub.endDate).getTime() - new Date(sub.startDate).getTime()) / 86_400_000
   );
-  const statusStyle = STATUS_STYLE[sub.status] ?? STATUS_STYLE.ACTIVE;
+  const statusStyle = STATUS_STYLE[sub.status] ?? DEFAULT_STATUS_STYLE;
   const price = parseFloat(sub.plan.price);
   const daysColor = days > 30 ? "var(--lime)" : days > 7 ? "var(--mango)" : "var(--chili)";
 
