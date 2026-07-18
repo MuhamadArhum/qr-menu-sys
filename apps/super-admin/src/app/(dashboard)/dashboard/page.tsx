@@ -39,8 +39,9 @@ const STATS = [
     label: "Restaurants",
     color: "var(--chili)",
     bg: "var(--chili-10)",
+    accentColor: "#ff4630",
     icon: (
-      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4" />
       </svg>
     ),
@@ -50,8 +51,9 @@ const STATS = [
     label: "Branches",
     color: "#3B82F6",
     bg: "#3b82f61a",
+    accentColor: "#3B82F6",
     icon: (
-      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="10" r="3" /><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
       </svg>
     ),
@@ -61,8 +63,9 @@ const STATS = [
     label: "Tables",
     color: "var(--mango)",
     bg: "rgba(255,169,48,0.12)",
+    accentColor: "#ffa930",
     icon: (
-      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 7.5h18M3 12h18M6 7.5V18m12-10.5V18" />
       </svg>
     ),
@@ -72,8 +75,9 @@ const STATS = [
     label: "QR Scans",
     color: "var(--lime)",
     bg: "rgba(143,163,0,0.12)",
+    accentColor: "#8fa300",
     icon: (
-      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="3" width="5" height="5" rx="0.5" /><rect x="16" y="3" width="5" height="5" rx="0.5" />
         <rect x="3" y="16" width="5" height="5" rx="0.5" /><path d="M21 21h.01M13 3v5h5M13 13h5v5M13 13H3M21 13v.01" />
       </svg>
@@ -84,27 +88,88 @@ const STATS = [
     label: "Active Subs",
     color: "#8B5CF6",
     bg: "rgba(139,92,246,0.12)",
+    accentColor: "#8B5CF6",
     icon: (
-      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" />
       </svg>
     ),
   },
 ];
 
-function statusBadge(status: string) {
+const QUICK_ACTIONS = [
+  {
+    label: "Add Restaurant",
+    href: "/restaurants",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" /><path d="M12 8v8M8 12h8" />
+      </svg>
+    ),
+  },
+  {
+    label: "Manage Plans",
+    href: "/plans",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" />
+      </svg>
+    ),
+  },
+  {
+    label: "View Subscriptions",
+    href: "/subscriptions",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 2h16v20l-2-1-2 1-2-1-2 1-2-1-2 1V2z" /><path d="M8 7h8M8 11h8M8 15h5" />
+      </svg>
+    ),
+  },
+  {
+    label: "View Audit Log",
+    href: "/audit",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
+      </svg>
+    ),
+  },
+];
+
+function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    ACTIVE:    { bg: "rgba(143,163,0,0.12)",  color: "var(--lime)"  },
+    ACTIVE:    { bg: "rgba(143,163,0,0.12)",  color: "var(--lime)"    },
     INACTIVE:  { bg: "var(--char-08)",         color: "var(--char-60)" },
-    SUSPENDED: { bg: "var(--chili-10)",        color: "var(--chili)" },
-    PENDING:   { bg: "rgba(255,169,48,0.12)", color: "var(--mango)" },
+    SUSPENDED: { bg: "var(--chili-10)",        color: "var(--chili)"   },
+    PENDING:   { bg: "rgba(255,169,48,0.12)", color: "var(--mango)"   },
   };
   const s = map[status] ?? { bg: "var(--char-08)", color: "var(--char-60)" };
   return (
-    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold"
-      style={{ background: s.bg, color: s.color, fontFamily: "Space Grotesk, sans-serif" }}>
+    <span
+      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold"
+      style={{ background: s.bg, color: s.color, fontFamily: "Space Grotesk, sans-serif" }}
+    >
       {status}
     </span>
+  );
+}
+
+// Decorative dots grid for hero banner
+function DecorativeDotsGrid() {
+  return (
+    <svg width="100" height="100" viewBox="0 0 100 100" style={{ opacity: 0.10 }}>
+      {Array.from({ length: 4 }).map((_, ri) =>
+        Array.from({ length: 4 }).map((_, ci) => (
+          <circle
+            key={`${ri}-${ci}`}
+            cx={ci * 28 + 14}
+            cy={ri * 28 + 14}
+            r="5"
+            fill="white"
+          />
+        ))
+      )}
+    </svg>
   );
 }
 
@@ -138,208 +203,325 @@ export default function DashboardPage() {
     .slice(0, 5);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="flex items-start justify-between pt-2">
-        <div>
-          <h1 className="text-2xl font-black" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>
+    <div className="max-w-6xl mx-auto space-y-6">
+
+      {/* ── Section 1: Hero Banner ─────────────────────────────────── */}
+      <div
+        className="rounded-3xl p-8 relative overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #1c1710 0%, #2d2318 60%, #3d2f1e 100%)" }}
+      >
+        {/* Decorative pattern — top right */}
+        <div className="absolute top-6 right-8 pointer-events-none select-none">
+          <DecorativeDotsGrid />
+        </div>
+
+        <div className="relative z-10 max-w-lg">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+              style={{ background: "rgba(139,92,246,0.25)", color: "#c4b5fd", border: "1px solid rgba(139,92,246,0.4)" }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-current inline-block" />
+              Super Admin
+            </span>
+            <span
+              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold"
+              style={{ background: "rgba(255,247,234,0.10)", color: "rgba(255,247,234,0.75)", border: "1px solid rgba(255,247,234,0.15)" }}
+            >
+              Abyte Menu
+            </span>
+          </div>
+
+          <h1
+            className="text-3xl font-black leading-tight mb-2"
+            style={{ fontFamily: "Space Grotesk, sans-serif", color: "#ffffff" }}
+          >
             Platform Overview
           </h1>
-          <p className="text-sm mt-1" style={{ color: "var(--char-60)" }}>Abyte Menu · All tenants</p>
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "Work Sans, sans-serif" }}>
+            Abyte Menu · Super Admin &nbsp;·&nbsp; {today}
+          </p>
         </div>
-        <span className="text-sm pt-1" style={{ color: "var(--char-60)" }}>{today}</span>
       </div>
 
-      {/* Stat cards */}
+      {/* ── Section 2: KPI Strip ───────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-        {STATS.map(({ key, label, color, bg, icon }) => (
-          <div key={key} className="rounded-2xl p-5 flex flex-col gap-3"
-            style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: bg, color }}>
-              {icon}
+        {STATS.map(({ key, label, color, bg, accentColor, icon }) => (
+          <div
+            key={key}
+            className="rounded-2xl overflow-hidden flex flex-col"
+            style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}
+          >
+            <div className="p-5 flex items-center gap-3 flex-1">
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: bg, color }}
+              >
+                {icon}
+              </div>
+              <div className="min-w-0">
+                {overviewLoading ? (
+                  <div
+                    className="h-8 w-14 rounded-lg animate-pulse mb-1"
+                    style={{ background: "var(--char-08)" }}
+                  />
+                ) : (
+                  <div
+                    className="text-3xl font-black leading-none"
+                    style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char)" }}
+                  >
+                    {overview?.[key] !== undefined ? overview[key].toLocaleString() : "—"}
+                  </div>
+                )}
+                <div className="text-xs mt-1.5 font-medium" style={{ color: "var(--char-60)" }}>{label}</div>
+              </div>
             </div>
-            <div>
-              {overviewLoading ? (
-                <div className="h-7 w-14 rounded-lg animate-pulse mb-1" style={{ background: "var(--char-08)" }} />
-              ) : (
-                <div className="text-2xl font-black leading-none"
-                  style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char)" }}>
-                  {overview?.[key] !== undefined ? overview[key].toLocaleString() : "—"}
-                </div>
-              )}
-              <div className="text-xs mt-1.5 font-medium" style={{ color: "var(--char-60)" }}>{label}</div>
-            </div>
+            {/* Accent bar */}
+            <div className="h-[3px] w-full" style={{ background: accentColor }} />
           </div>
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          {
-            label: "Add Restaurant",
-            href: "/restaurants",
-            icon: (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" /><path d="M12 8v8M8 12h8" />
-              </svg>
-            ),
-          },
-          {
-            label: "Manage Plans",
-            href: "/plans",
-            icon: (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" />
-              </svg>
-            ),
-          },
-          {
-            label: "View Subscriptions",
-            href: "/subscriptions",
-            icon: (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 2h16v20l-2-1-2 1-2-1-2 1-2-1-2 1V2z" /><path d="M8 7h8M8 11h8M8 15h5" />
-              </svg>
-            ),
-          },
-          {
-            label: "View Audit Log",
-            href: "/audit",
-            icon: (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
-              </svg>
-            ),
-          },
-        ].map(({ label, href, icon }) => (
-          <Link key={href} href={href}
-            className="rounded-2xl p-4 flex items-center gap-3 transition-colors"
-            style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)", textDecoration: "none" }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--chili)")}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--char-15)")}>
-            <span style={{ color: "var(--chili)" }}>{icon}</span>
-            <span className="text-sm font-semibold leading-tight" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
-              {label}
-            </span>
-          </Link>
-        ))}
-      </div>
+      {/* ── Section 3: 2-column layout ─────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-      {/* Recent Restaurants */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
-        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--char-08)" }}>
-          <h2 className="font-black text-sm" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>
-            Recent Restaurants
-          </h2>
-          <Link href="/restaurants" className="text-xs font-bold transition-colors" style={{ color: "var(--chili)" }}>
-            View all →
-          </Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left border-b" style={{ borderColor: "var(--char-08)" }}>
-                {["Restaurant", "Legal Name", "Status", "Created", ""].map((h, i) => (
-                  <th key={i} className="px-5 py-3 text-[11px] font-black tracking-widest uppercase"
-                    style={{ color: "var(--char-60)", fontFamily: "Space Grotesk, sans-serif" }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {recentLoading ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <tr key={i} className="border-b" style={{ borderColor: "var(--char-08)" }}>
-                    {[1, 2, 3, 4, 5].map(j => (
-                      <td key={j} className="px-5 py-3.5">
-                        <div className="h-3.5 rounded animate-pulse" style={{ background: "var(--char-08)", width: j === 1 ? "60%" : j === 5 ? "30%" : "50%" }} />
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : recentRes?.data.length ? (
-                recentRes.data.map((r) => (
-                  <tr key={r.id} className="border-b last:border-0 transition-colors"
-                    style={{ borderColor: "var(--char-08)" }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "var(--cream)")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                    <td className="px-5 py-3.5">
-                      <span className="font-semibold" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
-                        {r.displayName}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5" style={{ color: "var(--char-60)" }}>{r.legalName}</td>
-                    <td className="px-5 py-3.5">{statusBadge(r.status)}</td>
-                    <td className="px-5 py-3.5 text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char-60)" }}>
-                      {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <Link href={`/restaurants/${r.id}`}
-                        className="text-xs font-bold transition-colors" style={{ color: "var(--chili)" }}>
-                        View →
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-sm" style={{ color: "var(--char-60)" }}>
-                    No restaurants yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Expiring Soon */}
-      {expiringSoon.length > 0 && (
-        <div className="rounded-2xl overflow-hidden" style={{ background: "var(--paper)", border: "1.5px solid rgba(255,169,48,0.3)" }}>
-          <div className="flex items-center justify-between px-5 py-4 border-b"
-            style={{ borderColor: "rgba(255,169,48,0.2)", background: "rgba(255,169,48,0.05)" }}>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--mango)" }} />
-              <h2 className="font-black text-sm" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>
-                Expiring Soon
+        {/* Left col — Recent Restaurants */}
+        <div
+          className="lg:col-span-3 rounded-2xl overflow-hidden flex flex-col"
+          style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}
+        >
+          <div
+            className="flex items-center justify-between px-6 py-4 border-b shrink-0"
+            style={{ borderColor: "var(--char-15)" }}
+          >
+            <div>
+              <h2
+                className="font-black text-base"
+                style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}
+              >
+                Recent Restaurants
               </h2>
-              <span className="text-xs" style={{ color: "var(--char-60)" }}>within 30 days</span>
+              <p className="text-xs mt-0.5" style={{ color: "var(--char-60)" }}>
+                Newest tenants on the platform
+              </p>
             </div>
-            <Link href="/subscriptions" className="text-xs font-bold" style={{ color: "var(--mango)" }}>
-              Manage →
+            <Link
+              href="/restaurants"
+              className="text-xs font-bold transition-opacity hover:opacity-70"
+              style={{ color: "var(--chili)" }}
+            >
+              View all →
             </Link>
           </div>
-          <ul>
-            {expiringSoon.map(s => {
-              const daysLeft = Math.ceil((new Date(s.endDate).getTime() - Date.now()) / 86_400_000);
-              const urgent = daysLeft <= 7;
-              return (
-                <li key={s.id} className="flex items-center justify-between px-5 py-3.5 border-b last:border-0"
-                  style={{ borderColor: "var(--char-08)" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "var(--cream)")}
-                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
-                      {s.restaurant?.displayName ?? s.restaurantId}
-                    </p>
-                    <p className="text-xs mt-0.5" style={{ color: "var(--char-60)" }}>
-                      Expires {new Date(s.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}{" "}
-                      <span className="font-bold" style={{ color: urgent ? "var(--chili)" : "var(--mango)" }}>
-                        ({daysLeft}d left)
-                      </span>
-                    </p>
+
+          {/* Restaurant rows */}
+          {recentLoading ? (
+            <div className="divide-y" style={{ borderColor: "var(--char-08)" }}>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 px-6 py-4">
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3.5 rounded animate-pulse" style={{ background: "var(--char-08)", width: "55%" }} />
+                    <div className="h-3 rounded animate-pulse" style={{ background: "var(--char-08)", width: "40%" }} />
                   </div>
-                  <Link href={`/restaurants/${s.restaurantId}`} className="btn-secondary text-xs py-1.5 px-3 shrink-0">
-                    Renew →
+                  <div className="h-5 w-16 rounded-full animate-pulse" style={{ background: "var(--char-08)" }} />
+                  <div className="h-3 w-20 rounded animate-pulse" style={{ background: "var(--char-08)" }} />
+                </div>
+              ))}
+            </div>
+          ) : recentRes?.data.length ? (
+            <div className="divide-y" style={{ borderColor: "var(--char-08)" }}>
+              {recentRes.data.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex items-center gap-4 px-6 py-4 transition-colors"
+                  onMouseEnter={e => (e.currentTarget.style.background = "var(--cream)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                >
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className="text-sm font-bold truncate"
+                      style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}
+                    >
+                      {r.displayName}
+                    </p>
+                    <p className="text-xs truncate mt-0.5" style={{ color: "var(--char-60)" }}>{r.legalName}</p>
+                  </div>
+                  <StatusBadge status={r.status} />
+                  <span
+                    className="text-xs shrink-0"
+                    style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char-60)" }}
+                  >
+                    {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                  <Link
+                    href={`/restaurants/${r.id}`}
+                    className="text-xs font-bold shrink-0 transition-opacity hover:opacity-70"
+                    style={{ color: "var(--chili)" }}
+                  >
+                    View →
                   </Link>
-                </li>
-              );
-            })}
-          </ul>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 px-6 gap-3">
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                style={{ background: "var(--char-08)" }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--char-30)" }}>
+                  <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4" />
+                </svg>
+              </div>
+              <p className="text-sm font-medium" style={{ color: "var(--char-60)" }}>No restaurants yet</p>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Right col — Expiring Subscriptions */}
+        <div className="lg:col-span-2">
+          {expiringSoon.length > 0 ? (
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{ background: "var(--paper)", border: "1.5px solid rgba(255,169,48,0.30)" }}
+            >
+              <div
+                className="flex items-center justify-between px-5 py-4 border-b"
+                style={{ borderColor: "rgba(255,169,48,0.20)", background: "rgba(255,169,48,0.05)" }}
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-2 h-2 rounded-full animate-pulse"
+                    style={{ background: "var(--mango)" }}
+                  />
+                  <h2
+                    className="font-black text-base"
+                    style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}
+                  >
+                    Expiring Soon
+                  </h2>
+                  <span className="text-xs" style={{ color: "var(--char-60)" }}>within 30 days</span>
+                </div>
+                <Link
+                  href="/subscriptions"
+                  className="text-xs font-bold transition-opacity hover:opacity-70"
+                  style={{ color: "var(--mango)" }}
+                >
+                  Manage →
+                </Link>
+              </div>
+              <ul className="divide-y" style={{ borderColor: "var(--char-08)" }}>
+                {expiringSoon.map(s => {
+                  const daysLeft = Math.ceil((new Date(s.endDate).getTime() - Date.now()) / 86_400_000);
+                  const urgent = daysLeft <= 7;
+                  const urgencyColor = urgent ? "var(--chili)" : daysLeft <= 14 ? "var(--mango)" : "var(--char-60)";
+                  return (
+                    <li
+                      key={s.id}
+                      className="flex items-center justify-between px-5 py-4 transition-colors"
+                      onMouseEnter={e => (e.currentTarget.style.background = "var(--cream)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className="text-sm font-bold truncate"
+                          style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}
+                        >
+                          {s.restaurant?.displayName ?? s.restaurantId}
+                        </p>
+                        <p className="text-xs mt-0.5" style={{ color: "var(--char-60)" }}>
+                          Expires{" "}
+                          {new Date(s.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                          {" "}
+                          <span className="font-bold" style={{ color: urgencyColor }}>
+                            · {daysLeft}d left
+                          </span>
+                        </p>
+                      </div>
+                      <Link
+                        href={`/restaurants/${s.restaurantId}`}
+                        className="ml-3 text-xs font-bold shrink-0 transition-opacity hover:opacity-70"
+                        style={{ color: urgent ? "var(--chili)" : "var(--mango)" }}
+                      >
+                        Renew →
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : (
+            /* All healthy state */
+            <div
+              className="rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4 h-full min-h-[200px]"
+              style={{ background: "rgba(143,163,0,0.07)", border: "1.5px solid rgba(143,163,0,0.25)" }}
+            >
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                style={{ background: "rgba(143,163,0,0.18)" }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--lime)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </div>
+              <div>
+                <p
+                  className="text-sm font-bold"
+                  style={{ color: "var(--lime)", fontFamily: "Space Grotesk, sans-serif" }}
+                >
+                  All subscriptions healthy
+                </p>
+                <p className="text-xs mt-1" style={{ color: "var(--char-60)" }}>
+                  No subscriptions expiring in the next 30 days.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Section 4: Quick Actions ───────────────────────────────── */}
+      <div>
+        <h2
+          className="text-sm font-black mb-3 tracking-wide"
+          style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char-60)", textTransform: "uppercase", letterSpacing: "0.06em" }}
+        >
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {QUICK_ACTIONS.map(({ label, href, icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="rounded-2xl p-5 flex items-center gap-4 transition-all"
+              style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)", textDecoration: "none" }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = "var(--chili)";
+                e.currentTarget.style.background = "rgba(255,70,48,0.03)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = "var(--char-15)";
+                e.currentTarget.style.background = "var(--paper)";
+              }}
+            >
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: "var(--char-08)", color: "var(--chili)" }}
+              >
+                {icon}
+              </div>
+              <span
+                className="flex-1 text-sm font-semibold leading-tight"
+                style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}
+              >
+                {label}
+              </span>
+              <span style={{ color: "var(--char-30)", fontSize: "16px" }}>→</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
