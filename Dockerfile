@@ -1,6 +1,9 @@
 FROM node:22-alpine
 WORKDIR /app
 
+# Prisma requires OpenSSL 1.1 on Alpine
+RUN apk add --no-cache openssl
+
 # Install pnpm
 RUN npm install -g pnpm@11.0.9
 
