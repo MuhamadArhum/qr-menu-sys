@@ -6,6 +6,11 @@ import { AppModule } from "./app.module";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Health check — registered BEFORE the global prefix so it lives at /health
+  app.getHttpAdapter().get("/health", (_req: unknown, res: { json: (body: unknown) => void }) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   app.setGlobalPrefix("api/v1");
 
   app.useGlobalPipes(

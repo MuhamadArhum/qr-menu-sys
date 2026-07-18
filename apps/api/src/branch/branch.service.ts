@@ -36,6 +36,24 @@ export class BranchService {
   // ─── Create ───────────────────────────────────────────────────────────────
 
   async create(restaurantId: string, dto: CreateBranchDto, actorId: string) {
+    // ── Subscription limit check ──────────────────────────────────────────────
+    const subscription = await this.prisma.subscription.findUnique({
+      where: { restaurantId },
+      include: { plan: true },
+    });
+    if (subscription?.plan?.featureLimits) {
+      const limits = subscription.plan.featureLimits as Record<string, number> | null;
+      const maxBranches = limits?.["maxBranches"];
+      if (typeof maxBranches === "number" && maxBranches > 0) {
+        const branchCount = await this.prisma.branch.count({
+          where: { restaurantId, status: { not: Status.ARCHIVED } },
+        });
+        if (branchCount >= maxBranches) {
+          throw new ForbiddenException("Branch limit reached for your subscription plan");
+        }
+      }
+    }
+
     const branch = await this.prisma.branch.create({
       data: {
         restaurantId,

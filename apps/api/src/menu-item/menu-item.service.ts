@@ -42,6 +42,24 @@ export class MenuItemService {
   async create(restaurantId: string, dto: CreateMenuItemDto, actorId: string) {
     await this.categoryService.assertOwnership(dto.categoryId, restaurantId);
 
+    // ── Subscription limit check ──────────────────────────────────────────────
+    const subscription = await this.prisma.subscription.findUnique({
+      where: { restaurantId },
+      include: { plan: true },
+    });
+    if (subscription?.plan?.featureLimits) {
+      const limits = subscription.plan.featureLimits as Record<string, number> | null;
+      const maxMenuItems = limits?.["maxMenuItems"];
+      if (typeof maxMenuItems === "number" && maxMenuItems > 0) {
+        const itemCount = await this.prisma.menuItem.count({
+          where: { restaurantId, status: { not: Status.ARCHIVED } },
+        });
+        if (itemCount >= maxMenuItems) {
+          throw new ForbiddenException("Menu item limit reached for your subscription plan");
+        }
+      }
+    }
+
     const maxOrder = await this.prisma.menuItem.aggregate({
       where: { restaurantId, categoryId: dto.categoryId },
       _max: { sortOrder: true },

@@ -40,6 +40,9 @@ export class TableService {
   ) {
     await this.assertBranchOwnership(branchId, restaurantId);
 
+    // ── Subscription limit check ──────────────────────────────────────────────
+    await this.enforceTableLimit(restaurantId, 1);
+
     const table = await this.prisma.table.create({
       data: {
         branchId,
@@ -73,6 +76,9 @@ export class TableService {
     if (count > 100) {
       throw new BadRequestException("Cannot create more than 100 tables at once");
     }
+
+    // ── Subscription limit check ──────────────────────────────────────────────
+    await this.enforceTableLimit(restaurantId, count);
 
     const tables = await this.prisma.$transaction(
       Array.from({ length: count }, (_, i) => {
@@ -181,6 +187,25 @@ export class TableService {
 
   private generateCode(): string {
     return crypto.randomBytes(8).toString("hex");
+  }
+
+  private async enforceTableLimit(restaurantId: string, adding: number) {
+    const subscription = await this.prisma.subscription.findUnique({
+      where: { restaurantId },
+      include: { plan: true },
+    });
+    if (subscription?.plan?.featureLimits) {
+      const limits = subscription.plan.featureLimits as Record<string, number> | null;
+      const maxTables = limits?.["maxTables"];
+      if (typeof maxTables === "number" && maxTables > 0) {
+        const tableCount = await this.prisma.table.count({
+          where: { branch: { restaurantId }, status: { not: Status.ARCHIVED } },
+        });
+        if (tableCount + adding > maxTables) {
+          throw new ForbiddenException("Table limit reached for your subscription plan");
+        }
+      }
+    }
   }
 
   async assertBranchOwnership(branchId: string, restaurantId: string) {
