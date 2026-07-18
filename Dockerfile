@@ -27,4 +27,4 @@ RUN pnpm --filter @abyte/api build
 
 EXPOSE 3001
 
-CMD ["node", "apps/api/dist/main"]
+CMD ["sh", "-c", "pnpm --filter @abyte/api start:prod"]
