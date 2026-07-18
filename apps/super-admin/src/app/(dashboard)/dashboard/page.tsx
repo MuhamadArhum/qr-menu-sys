@@ -173,6 +173,59 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          {
+            label: "Add Restaurant",
+            href: "/restaurants",
+            icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><path d="M12 8v8M8 12h8" />
+              </svg>
+            ),
+          },
+          {
+            label: "Manage Plans",
+            href: "/plans",
+            icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" />
+              </svg>
+            ),
+          },
+          {
+            label: "View Subscriptions",
+            href: "/subscriptions",
+            icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 2h16v20l-2-1-2 1-2-1-2 1-2-1-2 1V2z" /><path d="M8 7h8M8 11h8M8 15h5" />
+              </svg>
+            ),
+          },
+          {
+            label: "View Audit Log",
+            href: "/audit",
+            icon: (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
+              </svg>
+            ),
+          },
+        ].map(({ label, href, icon }) => (
+          <Link key={href} href={href}
+            className="rounded-2xl p-4 flex items-center gap-3 transition-colors"
+            style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--chili)")}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--char-15)")}>
+            <span style={{ color: "var(--chili)" }}>{icon}</span>
+            <span className="text-sm font-semibold leading-tight" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
+              {label}
+            </span>
+          </Link>
+        ))}
+      </div>
+
       {/* Recent Restaurants */}
       <div className="rounded-2xl overflow-hidden" style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--char-08)" }}>
