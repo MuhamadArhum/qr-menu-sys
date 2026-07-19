@@ -17,9 +17,17 @@ interface MenuSummary {
 interface QRStats {
   totalScans: number;
   byTable: { tableId: string; label: string; branchName: string; count: number }[];
+  daily: { day: string; count: number }[];
 }
 
 interface Restaurant { name: string }
+
+interface MySubscription {
+  status: string;
+  startDate: string;
+  endDate: string;
+  plan: { name: string; billingCycle: string; price: string; featureLimits: Record<string, number> | null };
+}
 
 interface Order {
   id: string;
@@ -171,6 +179,12 @@ export default function DashboardPage() {
     enabled: !!user,
   });
 
+  const { data: mySub } = useQuery({
+    queryKey: ["subscription", "me"],
+    queryFn: () => api.get<MySubscription>("/subscriptions/me"),
+    enabled: !!user,
+  });
+
   const available = menu?.availability?.find(a => a.status === "AVAILABLE")?.count ?? 0;
   const soldOut   = menu?.availability?.find(a => a.status === "SOLD_OUT")?.count ?? 0;
   const topTables = scans?.byTable?.slice(0, 8) ?? [];
@@ -267,6 +281,61 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* ── QR Scan Trend ── */}
+      {scans?.daily && scans.daily.length > 0 && (
+        <div className="rounded-2xl p-6" style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h2 className="font-black text-base" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>QR Scan Trend</h2>
+              <p className="text-xs mt-0.5" style={{ color: "var(--char-60)" }}>Last 7 days</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-black" style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--chili)" }}>
+                {scans.daily.slice(-7).reduce((s, d) => s + d.count, 0)}
+              </p>
+              <p className="text-xs" style={{ color: "var(--char-60)" }}>scans this week</p>
+            </div>
+          </div>
+          {/* Bar chart */}
+          <div className="flex items-end gap-2 h-24">
+            {(() => {
+              const last7 = scans.daily.slice(-7);
+              const max = Math.max(...last7.map(d => d.count), 1);
+              return last7.map((d) => {
+                const pct = max > 0 ? (d.count / max) * 100 : 0;
+                const date = new Date(d.day);
+                const dayLabel = date.toLocaleDateString("en-US", { weekday: "short" });
+                const isToday = new Date().toDateString() === date.toDateString();
+                return (
+                  <div key={d.day} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group relative">
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                      <div className="text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap shadow-lg" style={{ background: "var(--char)", color: "var(--cream)" }}>
+                        {d.count} scan{d.count !== 1 ? "s" : ""}
+                      </div>
+                    </div>
+                    {/* Bar */}
+                    <div
+                      className="w-full rounded-t-xl transition-all duration-300"
+                      style={{
+                        height: `${Math.max(pct, 4)}%`,
+                        background: isToday
+                          ? "var(--chili)"
+                          : pct > 0 ? "rgba(255,70,48,0.35)" : "var(--char-08)",
+                      }}
+                    />
+                    {/* Day label */}
+                    <span className="text-[10px] font-semibold" style={{ color: isToday ? "var(--chili)" : "var(--char-60)" }}>
+                      {dayLabel}
+                    </span>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      )}
 
       {/* ── Section 3: 2-column layout ─────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -458,6 +527,60 @@ export default function DashboardPage() {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {/* Subscription Plan Card */}
+          {mySub && (
+            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
+              <div className="px-5 py-4 border-b" style={{ borderColor: "var(--char-15)", background: "var(--cream)" }}>
+                <div className="flex items-center justify-between">
+                  <h2 className="font-black text-sm" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>
+                    {mySub.plan.name}
+                  </h2>
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full"
+                    style={{ background: mySub.status === "ACTIVE" ? "rgba(143,163,0,0.15)" : "var(--char-08)", color: mySub.status === "ACTIVE" ? "var(--lime)" : "var(--char-60)", fontFamily: "Space Grotesk, sans-serif" }}>
+                    {mySub.status}
+                  </span>
+                </div>
+                <p className="text-xs mt-1" style={{ color: "var(--char-60)" }}>
+                  {mySub.plan.billingCycle.charAt(0) + mySub.plan.billingCycle.slice(1).toLowerCase()} · PKR {parseFloat(mySub.plan.price).toLocaleString()}
+                </p>
+              </div>
+              <div className="px-5 py-4">
+                {/* Days remaining bar */}
+                {(() => {
+                  const days = Math.ceil((new Date(mySub.endDate).getTime() - Date.now()) / 86_400_000);
+                  const total = Math.ceil((new Date(mySub.endDate).getTime() - new Date(mySub.startDate).getTime()) / 86_400_000);
+                  const pct = Math.max(0, Math.min(100, Math.round((days / total) * 100)));
+                  const barColor = pct > 40 ? "var(--lime)" : pct > 15 ? "var(--mango)" : "var(--chili)";
+                  return (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold" style={{ color: "var(--char-60)" }}>Days remaining</span>
+                        <span className="text-sm font-black" style={{ fontFamily: "JetBrains Mono, monospace", color: barColor }}>{Math.max(0, days)}d</span>
+                      </div>
+                      <div className="h-2 w-full rounded-full overflow-hidden" style={{ background: "var(--char-08)" }}>
+                        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: barColor }} />
+                      </div>
+                      <p className="text-[10px] mt-1.5" style={{ color: "var(--char-60)" }}>
+                        Expires {new Date(mySub.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </p>
+                    </div>
+                  );
+                })()}
+                {/* Feature limits if present */}
+                {mySub.plan.featureLimits && Object.keys(mySub.plan.featureLimits).length > 0 && (
+                  <div className="mt-4 pt-4 border-t space-y-2" style={{ borderColor: "var(--char-08)" }}>
+                    {Object.entries(mySub.plan.featureLimits).slice(0, 3).map(([key, val]) => (
+                      <div key={key} className="flex items-center justify-between text-xs">
+                        <span style={{ color: "var(--char-60)" }}>{key.replace(/([A-Z])/g, ' $1').replace('max ', '').trim()}</span>
+                        <span className="font-bold" style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char)" }}>{val === 0 ? "∞" : val}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

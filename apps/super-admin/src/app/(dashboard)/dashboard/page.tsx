@@ -33,6 +33,18 @@ interface Subscription {
   restaurant: { displayName: string };
 }
 
+interface AuditEntry {
+  id: string;
+  action: string;
+  entityType: string;
+  createdAt: string;
+  actor: { email: string } | null;
+}
+interface AuditResponse {
+  data: AuditEntry[];
+  total: number;
+}
+
 const STATS = [
   {
     key: "restaurants" as const,
@@ -191,6 +203,11 @@ export default function DashboardPage() {
     queryFn: () => api.get<Subscription[]>("/subscriptions"),
   });
 
+  const { data: auditLog } = useQuery({
+    queryKey: ["audit", "recent"],
+    queryFn: () => api.get<AuditResponse>("/audit?page=1&limit=6"),
+  });
+
   const thirtyDaysFromNow = new Date();
   thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
 
@@ -278,6 +295,46 @@ export default function DashboardPage() {
             </div>
             {/* Accent bar */}
             <div className="h-[3px] w-full" style={{ background: accentColor }} />
+          </div>
+        ))}
+      </div>
+
+      {/* ── This Month Highlights ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          {
+            label: "Total Tenants",
+            value: overview?.restaurants?.toLocaleString() ?? "—",
+            sub: "registered restaurants",
+            color: "var(--chili)",
+            bg: "var(--chili-10)",
+            borderColor: "rgba(255,70,48,0.13)",
+          },
+          {
+            label: "Platform QR Scans",
+            value: overview?.totalQRScans?.toLocaleString() ?? "—",
+            sub: "total scans all time",
+            color: "var(--lime)",
+            bg: "rgba(143,163,0,0.10)",
+            borderColor: "rgba(143,163,0,0.13)",
+          },
+          {
+            label: "Active Subscriptions",
+            value: overview?.activeSubscriptions?.toLocaleString() ?? "—",
+            sub: `of ${overview?.restaurants ?? "—"} total restaurants`,
+            color: "#8B5CF6",
+            bg: "rgba(139,92,246,0.10)",
+            borderColor: "rgba(139,92,246,0.13)",
+          },
+        ].map(({ label, value, sub, color, bg, borderColor }) => (
+          <div key={label} className="rounded-2xl p-6 relative overflow-hidden" style={{ background: bg, border: `1.5px solid ${borderColor}` }}>
+            <p className="text-4xl font-black mb-1" style={{ fontFamily: "JetBrains Mono, monospace", color }}>
+              {overviewLoading ? (
+                <span className="inline-block h-10 w-20 rounded-lg animate-pulse" style={{ background: color + "33" }} />
+              ) : value}
+            </p>
+            <p className="text-sm font-bold" style={{ color, fontFamily: "Space Grotesk, sans-serif" }}>{label}</p>
+            <p className="text-xs mt-1" style={{ color: "var(--char-60)" }}>{sub}</p>
           </div>
         ))}
       </div>
@@ -521,6 +578,47 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+
+      {/* ── Recent Activity ── */}
+      {auditLog?.data && auditLog.data.length > 0 && (
+        <div className="rounded-2xl overflow-hidden" style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
+          <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "var(--char-15)" }}>
+            <div>
+              <h2 className="font-black text-base" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>Recent Activity</h2>
+              <p className="text-xs mt-0.5" style={{ color: "var(--char-60)" }}>Latest platform actions</p>
+            </div>
+            <Link href="/audit" className="text-xs font-bold" style={{ color: "var(--chili)" }}>View all →</Link>
+          </div>
+          <div className="divide-y" style={{ borderColor: "var(--char-08)" }}>
+            {auditLog.data.map((entry) => {
+              const actionColors: Record<string, string> = {
+                CREATE: "var(--lime)", UPDATE: "#3B82F6", DELETE: "var(--chili)",
+                APPROVE: "var(--lime)", SUSPEND: "var(--mango)", ACTIVATE: "var(--lime)",
+              };
+              const color = actionColors[entry.action] ?? "var(--char-60)";
+              return (
+                <div key={entry.id} className="flex items-center gap-4 px-6 py-3.5"
+                  onMouseEnter={e => (e.currentTarget.style.background = "var(--cream)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
+                      <span style={{ color }}>{entry.action}</span>
+                      {" "}{entry.entityType.replace(/_/g, " ").toLowerCase()}
+                    </p>
+                    <p className="text-xs truncate mt-0.5" style={{ color: "var(--char-60)" }}>
+                      {entry.actor?.email ?? "System"} · {new Date(entry.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    </p>
+                  </div>
+                  <span className="text-xs shrink-0" style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char-30)" }}>
+                    {new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
     </div>
   );
