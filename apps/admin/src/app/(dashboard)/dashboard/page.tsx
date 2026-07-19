@@ -155,34 +155,38 @@ function DecorativeQRPattern() {
 export default function DashboardPage() {
   const user = useAuthStore(s => s.user);
 
+  const hasToken = typeof window !== "undefined" && !!localStorage.getItem("access_token");
+
   const { data: restaurant } = useQuery({
     queryKey: ["restaurant", "me"],
     queryFn: () => api.get<Restaurant>("/restaurants/me"),
-    enabled: !!user,
+    enabled: hasToken,
+    staleTime: 10 * 60_000,
   });
 
   const { data: menu, isLoading: menuLoading } = useQuery({
     queryKey: ["analytics", "menu-summary"],
     queryFn: () => api.get<MenuSummary>("/analytics/menu-summary"),
-    enabled: !!user,
+    enabled: hasToken,
   });
 
   const { data: scans, isLoading: scansLoading } = useQuery({
     queryKey: ["analytics", "qr-scans"],
     queryFn: () => api.get<QRStats>("/analytics/qr-scans"),
-    enabled: !!user,
+    enabled: hasToken,
   });
 
   const { data: recentOrders } = useQuery({
     queryKey: ["orders", "recent"],
     queryFn: () => api.get<OrdersResponse>("/orders?page=1&limit=5"),
-    enabled: !!user,
+    enabled: hasToken,
   });
 
   const { data: mySub } = useQuery({
     queryKey: ["subscription", "me"],
     queryFn: () => api.get<MySubscription>("/subscriptions/me"),
-    enabled: !!user,
+    enabled: hasToken,
+    staleTime: 10 * 60_000,
   });
 
   const available = menu?.availability?.find(a => a.status === "AVAILABLE")?.count ?? 0;
