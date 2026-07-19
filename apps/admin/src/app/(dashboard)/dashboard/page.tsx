@@ -238,6 +238,26 @@ export default function DashboardPage() {
             {formatDate()}
           </p>
         </div>
+
+        {/* Hero bottom stats row */}
+        <div className="relative z-10 flex flex-wrap gap-6 mt-8 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
+          {[
+            { label: "Total Items", value: menu?.menuItems ?? "—", loading: menuLoading },
+            { label: "QR Scans", value: scans?.totalScans ?? "—", loading: scansLoading },
+            { label: "Categories", value: menu?.categories ?? "—", loading: menuLoading },
+          ].map(({ label, value, loading }) => (
+            <div key={label}>
+              {loading ? (
+                <div className="h-6 w-10 rounded animate-pulse mb-1" style={{ background: "rgba(255,255,255,0.15)" }} />
+              ) : (
+                <p className="text-2xl font-black" style={{ fontFamily: "JetBrains Mono, monospace", color: "#ffffff" }}>
+                  {typeof value === "number" ? value.toLocaleString() : value}
+                </p>
+              )}
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.50)" }}>{label}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── Section 2: KPI Strip ───────────────────────────────────── */}
@@ -334,6 +354,76 @@ export default function DashboardPage() {
               });
             })()}
           </div>
+        </div>
+      )}
+
+      {/* ── Menu Health ── */}
+      {menu?.availability && menu.availability.length > 0 && (() => {
+        const total = menu.availability.reduce((s, a) => s + a.count, 0);
+        const available = menu.availability.find(a => a.status === "AVAILABLE")?.count ?? 0;
+        const soldOut = menu.availability.find(a => a.status === "SOLD_OUT")?.count ?? 0;
+        const unavailable = menu.availability.find(a => a.status === "UNAVAILABLE")?.count ?? 0;
+        const avPct = total > 0 ? Math.round((available / total) * 100) : 0;
+        const soPct = total > 0 ? Math.round((soldOut / total) * 100) : 0;
+        const unPct = total > 0 ? Math.round((unavailable / total) * 100) : 0;
+
+        return (
+          <div className="rounded-2xl p-6" style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="font-black text-base" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>Menu Health</h2>
+                <p className="text-xs mt-0.5" style={{ color: "var(--char-60)" }}>{total} items total</p>
+              </div>
+              <Link href="/menu/items" className="text-xs font-bold" style={{ color: "var(--chili)" }}>Manage →</Link>
+            </div>
+
+            {/* Stacked bar */}
+            <div className="flex h-3 rounded-full overflow-hidden gap-0.5 mb-4">
+              {avPct > 0 && <div style={{ width: `${avPct}%`, background: "var(--lime)", borderRadius: "999px 0 0 999px" }} />}
+              {soPct > 0 && <div style={{ width: `${soPct}%`, background: "var(--mango)" }} />}
+              {unPct > 0 && <div style={{ width: `${unPct}%`, background: "var(--char-15)", borderRadius: "0 999px 999px 0" }} />}
+            </div>
+
+            {/* Legend */}
+            <div className="flex flex-wrap gap-4">
+              {[
+                { label: "Available", count: available, pct: avPct, color: "var(--lime)" },
+                { label: "Sold Out",  count: soldOut,   pct: soPct, color: "var(--mango)" },
+                { label: "Unavailable", count: unavailable, pct: unPct, color: "var(--char-30)" },
+              ].map(({ label, count, pct, color }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: color }} />
+                  <span className="text-xs font-medium" style={{ color: "var(--char-60)" }}>{label}</span>
+                  <span className="text-xs font-black" style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char)" }}>{count}</span>
+                  <span className="text-xs" style={{ color: "var(--char-30)" }}>({pct}%)</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── Variant & Addon Summary ── */}
+      {menu && (
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { label: "Variant Groups", value: menu.variantGroups, sub: "customization options", color: "#3B82F6", bg: "#3b82f61a" },
+            { label: "Addon Groups",   value: menu.addonGroups,   sub: "optional add-ons",     color: "#8B5CF6", bg: "rgba(139,92,246,0.10)" },
+          ].map(({ label, value, sub, color, bg }) => (
+            <div key={label} className="rounded-2xl p-5 flex items-center gap-4"
+              style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: bg, color }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3" /><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-3xl font-black" style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char)" }}>{value}</p>
+                <p className="text-sm font-bold mt-0.5" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{label}</p>
+                <p className="text-xs" style={{ color: "var(--char-60)" }}>{sub}</p>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

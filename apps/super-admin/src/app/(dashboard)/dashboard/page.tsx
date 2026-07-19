@@ -219,6 +219,10 @@ export default function DashboardPage() {
     })
     .slice(0, 5);
 
+  const activeCount   = (recentRes?.data ?? []).filter(r => r.status === "ACTIVE").length;
+  const inactiveCount = (recentRes?.data ?? []).filter(r => r.status === "INACTIVE").length;
+  const totalShown    = (recentRes?.data ?? []).length;
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
 
@@ -258,6 +262,26 @@ export default function DashboardPage() {
           <p className="text-sm" style={{ color: "rgba(255,255,255,0.55)", fontFamily: "Work Sans, sans-serif" }}>
             Abyte Menu · Super Admin &nbsp;·&nbsp; {today}
           </p>
+        </div>
+
+        {/* Hero bottom stats row */}
+        <div className="relative z-10 flex flex-wrap gap-6 mt-8 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
+          {[
+            { label: "Total Restaurants", value: overview?.restaurants ?? "—", loading: overviewLoading },
+            { label: "Total Branches",    value: overview?.branches ?? "—",    loading: overviewLoading },
+            { label: "Total Tables",      value: overview?.tables ?? "—",      loading: overviewLoading },
+          ].map(({ label, value, loading }) => (
+            <div key={label}>
+              {loading ? (
+                <div className="h-6 w-10 rounded animate-pulse mb-1" style={{ background: "rgba(255,255,255,0.15)" }} />
+              ) : (
+                <p className="text-2xl font-black" style={{ fontFamily: "JetBrains Mono, monospace", color: "#ffffff" }}>
+                  {typeof value === "number" ? value.toLocaleString() : value}
+                </p>
+              )}
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.50)" }}>{label}</p>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -338,6 +362,38 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* ── Restaurant Status Breakdown ── */}
+      {recentRes?.data && recentRes.data.length > 0 && (
+        <div className="rounded-2xl p-6" style={{ background: "var(--paper)", border: "1.5px solid var(--char-15)" }}>
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h2 className="font-black text-base" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>Restaurant Status</h2>
+              <p className="text-xs mt-0.5" style={{ color: "var(--char-60)" }}>Recent {totalShown} restaurants</p>
+            </div>
+            <Link href="/restaurants" className="text-xs font-bold" style={{ color: "var(--chili)" }}>View all →</Link>
+          </div>
+          <div className="space-y-3">
+            {[
+              { label: "Active",   count: activeCount,                            color: "var(--lime)",  total: totalShown },
+              { label: "Inactive", count: inactiveCount,                          color: "var(--mango)", total: totalShown },
+              { label: "Other",    count: totalShown - activeCount - inactiveCount, color: "var(--char-30)", total: totalShown },
+            ].filter(({ count }) => count > 0).map(({ label, count, color, total }) => {
+              const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+              return (
+                <div key={label} className="flex items-center gap-4">
+                  <span className="w-20 text-xs font-semibold shrink-0" style={{ color: "var(--char-60)" }}>{label}</span>
+                  <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: "var(--char-08)" }}>
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: color }} />
+                  </div>
+                  <span className="w-8 text-right text-xs font-black shrink-0" style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char)" }}>{count}</span>
+                  <span className="w-10 text-right text-xs shrink-0" style={{ color: "var(--char-30)" }}>{pct}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── Section 3: 2-column layout ─────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -534,6 +590,26 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* ── Platform Scale ── */}
+      <div className="rounded-2xl p-6" style={{ background: "linear-gradient(135deg, #1c1710 0%, #2d2318 100%)" }}>
+        <h2 className="font-black text-base mb-5" style={{ fontFamily: "Space Grotesk, sans-serif", color: "#ffffff" }}>Platform Scale</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { label: "Restaurants", value: overview?.restaurants,    color: "#ff4630" },
+            { label: "Branches",    value: overview?.branches,       color: "#ffa930" },
+            { label: "Tables",      value: overview?.tables,         color: "#8fa300" },
+            { label: "QR Scans",    value: overview?.totalQRScans,   color: "#8B5CF6" },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="text-center">
+              <div className="text-3xl font-black mb-1" style={{ fontFamily: "JetBrains Mono, monospace", color }}>
+                {overviewLoading ? "—" : (value?.toLocaleString() ?? "—")}
+              </div>
+              <div className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.50)" }}>{label}</div>
+            </div>
+          ))}
         </div>
       </div>
 
