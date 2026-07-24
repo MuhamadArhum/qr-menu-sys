@@ -7,7 +7,14 @@ import { getMe } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, staleTime: 5 * 60_000 } },
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 2 * 60_000,
+      gcTime: 10 * 60_000,
+      refetchOnWindowFocus: false,
+    },
+  },
 });
 
 const SESSION_KEY = "abyte_user";

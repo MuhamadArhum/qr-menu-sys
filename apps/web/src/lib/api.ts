@@ -2,7 +2,7 @@ const BASE = (process.env.API_INTERNAL_URL ?? "http://localhost:3001") + "/api/v
 
 export async function fetchMenu(codeValue: string) {
   const res = await fetch(`${BASE}/public/menu/${codeValue}`, {
-    cache: "no-store",
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) {

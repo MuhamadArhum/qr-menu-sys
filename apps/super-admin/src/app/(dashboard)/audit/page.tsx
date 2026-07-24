@@ -60,7 +60,22 @@ export default function AuditPage() {
       </div>
 
       {isLoading ? (
-        <div className="card p-8 text-center text-zinc-400">Loading…</div>
+        <div className="card overflow-hidden animate-pulse">
+          <div className="bg-zinc-50 border-b border-zinc-100 flex gap-4 px-4 py-3">
+            {[70, 130, 90, 110, 80].map((w, i) => (
+              <div key={i} className="h-3 rounded bg-zinc-200" style={{ width: w }} />
+            ))}
+          </div>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-zinc-100 last:border-0">
+              <div className="h-3 w-24 rounded bg-zinc-100" />
+              <div className="h-3 rounded bg-zinc-100" style={{ width: 120 + (i % 4) * 12 }} />
+              <div className="h-5 w-14 rounded-full bg-zinc-100" />
+              <div className="h-3 w-28 rounded bg-zinc-100" />
+              <div className="h-3 w-16 rounded bg-zinc-100" />
+            </div>
+          ))}
+        </div>
       ) : !data || data.data.length === 0 ? (
         <div className="card p-12 text-center"><p className="text-zinc-500">No audit entries found.</p></div>
       ) : (
