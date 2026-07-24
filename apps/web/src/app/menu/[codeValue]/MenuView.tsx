@@ -87,10 +87,10 @@ function fmt(currency: string, n: number) {
 }
 
 function allCats(menu: Category[]) {
-  const r: { id: string; name: string }[] = [];
+  const r: { id: string; name: string; nameUr: string | null }[] = [];
   for (const c of menu) {
-    r.push({ id: c.id, name: c.name });
-    for (const ch of c.children) r.push({ id: ch.id, name: ch.name });
+    r.push({ id: c.id, name: c.name, nameUr: c.nameUr });
+    for (const ch of c.children) r.push({ id: ch.id, name: ch.name, nameUr: ch.nameUr });
   }
   return r;
 }
@@ -167,12 +167,14 @@ function DietBadge({ tag }: { tag: string }) {
 
 // ─── ItemCard ─────────────────────────────────────────────────────────────────
 
-function ItemCard({ item, currency, onOpen, t }: {
-  item: MenuItem; currency: string; t: Record<string, string>;
+function ItemCard({ item, currency, onOpen, t, lang }: {
+  item: MenuItem; currency: string; t: Record<string, string>; lang: Lang;
   onOpen: (i: MenuItem) => void;
 }) {
   const price = parseFloat(item.basePrice);
   const soldOut = item.availability === "SOLD_OUT";
+  const displayName = (lang === "ur" && item.nameUr) ? item.nameUr : item.name;
+  const displayDesc = (lang === "ur" && item.descriptionUr) ? item.descriptionUr : item.description;
   const swatch = swatchColor(item.name);
 
   return (
@@ -183,7 +185,7 @@ function ItemCard({ item, currency, onOpen, t }: {
     >
       <div className="relative shrink-0 w-20 h-20 rounded-2xl overflow-hidden" style={{ background: swatch + "22" }}>
         {item.imageUrl ? (
-          <Image src={item.imageUrl} alt={item.name} fill className="object-cover" sizes="80px" />
+          <Image src={item.imageUrl} alt={displayName} fill className="object-cover" sizes="80px" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-2xl font-black"
             style={{ color: swatch, fontFamily: "Space Grotesk, sans-serif" }}>
@@ -204,10 +206,10 @@ function ItemCard({ item, currency, onOpen, t }: {
           </div>
         )}
         <h3 className="font-bold text-sm leading-snug" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
-          {item.name}
+          {displayName}
         </h3>
-        {item.description && (
-          <p className="text-xs line-clamp-2 leading-relaxed" style={{ color: "var(--char-60)" }}>{item.description}</p>
+        {displayDesc && (
+          <p className="text-xs line-clamp-2 leading-relaxed" style={{ color: "var(--char-60)" }}>{displayDesc}</p>
         )}
         <div className="flex items-center justify-between mt-auto pt-1">
           <span className="font-bold text-sm" style={{ fontFamily: "JetBrains Mono, monospace", color: "var(--char)" }}>
@@ -229,8 +231,8 @@ function ItemCard({ item, currency, onOpen, t }: {
 
 // ─── ItemModal ────────────────────────────────────────────────────────────────
 
-function ItemModal({ item, currency, onClose, onAdd, t }: {
-  item: MenuItem | null; currency: string; t: Record<string, string>;
+function ItemModal({ item, currency, onClose, onAdd, t, lang }: {
+  item: MenuItem | null; currency: string; t: Record<string, string>; lang: Lang;
   onClose: () => void;
   onAdd: (item: MenuItem, v: SelectedVariant[], a: SelectedAddon[], qty: number) => void;
 }) {
@@ -255,6 +257,8 @@ function ItemModal({ item, currency, onClose, onAdd, t }: {
   const total = calcTotal(base, variants, addons, qty);
   const canAdd = item.variantGroups.filter(g => g.isRequired).every(g => variants.some(v => v.groupId === g.id));
   const swatch = swatchColor(item.name);
+  const modalName = (lang === "ur" && item.nameUr) ? item.nameUr : item.name;
+  const modalDesc = (lang === "ur" && item.descriptionUr) ? item.descriptionUr : item.description;
 
   function pickVariant(grp: VariantGroup, optId: string) {
     const opt = grp.options.find(o => o.id === optId)!;
@@ -292,8 +296,8 @@ function ItemModal({ item, currency, onClose, onAdd, t }: {
         <div className="p-5 space-y-5">
           {/* Name + description + dietary */}
           <div>
-            <h2 className="text-xl font-black" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{item.name}</h2>
-            {item.description && <p className="text-sm mt-1 leading-relaxed" style={{ color: "var(--char-60)" }}>{item.description}</p>}
+            <h2 className="text-xl font-black" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{modalName}</h2>
+            {modalDesc && <p className="text-sm mt-1 leading-relaxed" style={{ color: "var(--char-60)" }}>{modalDesc}</p>}
             {item.dietaryTags.length > 0 && (
               <div className="flex gap-1 flex-wrap mt-2">{item.dietaryTags.map(tag => <DietBadge key={tag} tag={tag} />)}</div>
             )}
@@ -587,28 +591,32 @@ function EstimateDrawer({ items, currency, restaurant, branch, onUpdateQty, onRe
 
 // ─── CategorySection ──────────────────────────────────────────────────────────
 
-function CategorySection({ category, currency, refs, onOpen, t }: {
-  category: Category; currency: string; t: Record<string, string>;
+function CategorySection({ category, currency, refs, onOpen, t, lang }: {
+  category: Category; currency: string; t: Record<string, string>; lang: Lang;
   refs: React.MutableRefObject<Record<string, HTMLElement | null>>;
   onOpen: (i: MenuItem) => void;
 }) {
+  const catName = (lang === "ur" && category.nameUr) ? category.nameUr : category.name;
   return (
     <section ref={el => { refs.current[category.id] = el; }} className="scroll-mt-28">
       <h2 className="text-base font-black mb-2" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>
-        {category.name}
+        {catName}
       </h2>
       {category.menuItems.length > 0 && (
-        <div>{category.menuItems.map(item => <ItemCard key={item.id} item={item} currency={currency} onOpen={onOpen} t={t} />)}</div>
+        <div>{category.menuItems.map(item => <ItemCard key={item.id} item={item} currency={currency} onOpen={onOpen} t={t} lang={lang} />)}</div>
       )}
-      {category.children.map(child => (
-        <div key={child.id} ref={el => { refs.current[child.id] = el; }} className="mt-5 scroll-mt-28">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-1 h-4 rounded-full" style={{ background: "var(--chili)" }} />
-            <h3 className="text-sm font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{child.name}</h3>
+      {category.children.map(child => {
+        const childName = (lang === "ur" && child.nameUr) ? child.nameUr : child.name;
+        return (
+          <div key={child.id} ref={el => { refs.current[child.id] = el; }} className="mt-5 scroll-mt-28">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-1 h-4 rounded-full" style={{ background: "var(--chili)" }} />
+              <h3 className="text-sm font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{childName}</h3>
+            </div>
+            <div>{child.menuItems.map(item => <ItemCard key={item.id} item={item} currency={currency} onOpen={onOpen} t={t} lang={lang} />)}</div>
           </div>
-          <div>{child.menuItems.map(item => <ItemCard key={item.id} item={item} currency={currency} onOpen={onOpen} t={t} />)}</div>
-        </div>
-      ))}
+        );
+      })}
     </section>
   );
 }
@@ -875,11 +883,12 @@ export function MenuView({ data, codeValue }: { data: MenuResponse; codeValue: s
           style={{ background: "var(--paper)f0", backdropFilter: "blur(8px)", borderColor: "var(--char-10)" }}>
           {cats.map(cat => {
             const active = activeId === cat.id;
+            const navName = (lang === "ur" && cat.nameUr) ? cat.nameUr : cat.name;
             return (
               <button key={cat.id} data-cat={cat.id} onClick={() => gotoCategory(cat.id)}
                 className="whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-all shrink-0"
                 style={active ? { background: "var(--char)", color: "var(--cream)" } : { background: "var(--char-10)", color: "var(--char-60)" }}>
-                {cat.name}
+                {navName}
               </button>
             );
           })}
@@ -902,7 +911,7 @@ export function MenuView({ data, codeValue }: { data: MenuResponse; codeValue: s
                   <p className="text-[10px] font-semibold uppercase tracking-wider pt-3 pb-1" style={{ color: "var(--char-60)" }}>
                     {item.categoryName}
                   </p>
-                  <ItemCard item={item} currency={currency} onOpen={setSelectedItem} t={t} />
+                  <ItemCard item={item} currency={currency} onOpen={setSelectedItem} t={t} lang={lang} />
                 </div>
               ))}
             </div>
@@ -914,12 +923,12 @@ export function MenuView({ data, codeValue }: { data: MenuResponse; codeValue: s
           )
         ) : (
           menu.map(cat => (
-            <CategorySection key={cat.id} category={cat} currency={currency} refs={refs} onOpen={setSelectedItem} t={t} />
+            <CategorySection key={cat.id} category={cat} currency={currency} refs={refs} onOpen={setSelectedItem} t={t} lang={lang} />
           ))
         )}
       </div>
 
-      <ItemModal item={selectedItem} currency={currency} onClose={() => setSelectedItem(null)} onAdd={addToCart} t={t} />
+      <ItemModal item={selectedItem} currency={currency} onClose={() => setSelectedItem(null)} onAdd={addToCart} t={t} lang={lang} />
       {toast && <Toast message={toast} />}
       <EstimateDrawer
         items={cart} currency={currency} restaurant={restaurant} branch={branch}

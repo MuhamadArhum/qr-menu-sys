@@ -8,6 +8,12 @@ export class CreateCategoryDto {
   @MaxLength(80)
   name!: string;
 
+  @ApiPropertyOptional({ example: "مشروبات" })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  nameUr?: string;
+
   @ApiPropertyOptional({ example: "https://r2.example.com/beverages.png" })
   @IsOptional()
   @IsUrl()

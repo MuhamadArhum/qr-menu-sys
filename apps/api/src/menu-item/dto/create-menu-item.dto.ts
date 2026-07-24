@@ -19,11 +19,23 @@ export class CreateMenuItemDto {
   @MaxLength(120)
   name!: string;
 
+  @ApiPropertyOptional({ example: "مٹن کڑاہی" })
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  nameUr?: string;
+
   @ApiPropertyOptional({ example: "Classic tomato and mozzarella" })
   @IsOptional()
   @IsString()
   @MaxLength(500)
   description?: string;
+
+  @ApiPropertyOptional({ example: "کلاسک ٹماٹر اور موزاریلا" })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  descriptionUr?: string;
 
   @ApiProperty({ example: 12.99 })
   @IsNumber({ maxDecimalPlaces: 2 })

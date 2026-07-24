@@ -15,6 +15,7 @@ const CATEGORY_SELECT = {
   restaurantId: true,
   parentCategoryId: true,
   name: true,
+  nameUr: true,
   imageUrl: true,
   sortOrder: true,
   status: true,
@@ -47,6 +48,7 @@ export class CategoryService {
       data: {
         restaurantId,
         name: dto.name,
+        nameUr: dto.nameUr,
         imageUrl: dto.imageUrl,
         parentCategoryId: dto.parentCategoryId ?? null,
         sortOrder: (maxOrder._max.sortOrder ?? -1) + 1,
@@ -116,6 +118,7 @@ export class CategoryService {
       where: { id: categoryId },
       data: {
         ...(dto.name && { name: dto.name }),
+        ...(dto.nameUr !== undefined && { nameUr: dto.nameUr }),
         ...(dto.imageUrl !== undefined && { imageUrl: dto.imageUrl }),
       },
       select: CATEGORY_SELECT,

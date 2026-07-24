@@ -71,7 +71,9 @@ export interface AddonGroup {
 export interface MenuItem {
   id: string;
   name: string;
+  nameUr: string | null;
   description: string | null;
+  descriptionUr: string | null;
   basePrice: string;
   imageUrl: string | null;
   calories: number | null;
@@ -88,6 +90,7 @@ export interface MenuItem {
 export interface Category {
   id: string;
   name: string;
+  nameUr: string | null;
   imageUrl: string | null;
   sortOrder: number;
   menuItems: MenuItem[];

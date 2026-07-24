@@ -8,6 +8,12 @@ export class UpdateCategoryDto {
   @MaxLength(80)
   name?: string;
 
+  @ApiPropertyOptional({ example: "گرم مشروبات" })
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  nameUr?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsUrl()

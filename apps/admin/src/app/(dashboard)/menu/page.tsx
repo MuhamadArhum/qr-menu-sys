@@ -19,6 +19,7 @@ interface Category {
 export default function MenuPage() {
   const qc = useQueryClient();
   const [newName, setNewName] = useState("");
+  const [newNameUr, setNewNameUr] = useState("");
   const [creating, setCreating] = useState(false);
 
   const { data: categories = [], isLoading } = useQuery({
@@ -27,10 +28,11 @@ export default function MenuPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (name: string) => api.post("/categories", { name }),
+    mutationFn: () => api.post("/categories", { name: newName, nameUr: newNameUr || undefined }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["categories"] });
       setNewName("");
+      setNewNameUr("");
       setCreating(false);
       toast.success("Category created");
     },
@@ -64,23 +66,38 @@ export default function MenuPage() {
       {creating && (
         <div className="card p-5 mb-6">
           <h2 className="text-sm font-semibold text-gray-700 mb-4">New Category</h2>
-          <div className="flex gap-3 items-center">
-            <input
-              autoFocus
-              placeholder="Category name"
-              className="input flex-1"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && newName && createMutation.mutate(newName)}
-            />
-            <button
-              className="btn-primary"
-              disabled={!newName || createMutation.isPending}
-              onClick={() => createMutation.mutate(newName)}
-            >
-              {createMutation.isPending ? "Saving…" : "Save"}
-            </button>
-            <button className="btn-secondary" onClick={() => setCreating(false)}>Cancel</button>
+          <div className="flex gap-3 items-start flex-wrap">
+            <div className="flex-1 min-w-[180px]">
+              <label className="label">Name (English) *</label>
+              <input
+                autoFocus
+                placeholder="Category name"
+                className="input"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && newName && createMutation.mutate()}
+              />
+            </div>
+            <div className="flex-1 min-w-[180px]">
+              <label className="label">نام (اردو)</label>
+              <input
+                placeholder="اردو نام"
+                className="input text-right"
+                dir="rtl"
+                value={newNameUr}
+                onChange={(e) => setNewNameUr(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2 self-end pb-0.5">
+              <button
+                className="btn-primary"
+                disabled={!newName || createMutation.isPending}
+                onClick={() => createMutation.mutate()}
+              >
+                {createMutation.isPending ? "Saving…" : "Save"}
+              </button>
+              <button className="btn-secondary" onClick={() => { setCreating(false); setNewNameUr(""); }}>Cancel</button>
+            </div>
           </div>
         </div>
       )}

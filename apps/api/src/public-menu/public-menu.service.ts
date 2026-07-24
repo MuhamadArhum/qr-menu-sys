@@ -63,6 +63,7 @@ export class PublicMenuService {
       select: {
         id: true,
         name: true,
+        nameUr: true,
         imageUrl: true,
         sortOrder: true,
         children: {
@@ -71,6 +72,7 @@ export class PublicMenuService {
           select: {
             id: true,
             name: true,
+            nameUr: true,
             imageUrl: true,
             sortOrder: true,
             menuItems: {
@@ -118,7 +120,9 @@ export class PublicMenuService {
 const itemSelect = {
   id: true,
   name: true,
+  nameUr: true,
   description: true,
+  descriptionUr: true,
   basePrice: true,
   imageUrl: true,
   calories: true,

@@ -27,7 +27,7 @@ function ItemsContent() {
   const searchParams = useSearchParams();
   const catFilter = searchParams.get("categoryId") ?? "";
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: "", basePrice: "", categoryId: catFilter, description: "" });
+  const [form, setForm] = useState({ name: "", nameUr: "", basePrice: "", categoryId: catFilter, description: "", descriptionUr: "" });
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
 
@@ -70,14 +70,16 @@ function ItemsContent() {
     mutationFn: () =>
       api.post("/menu-items", {
         name: form.name,
+        nameUr: form.nameUr || undefined,
         basePrice: parseFloat(form.basePrice),
         categoryId: form.categoryId,
         description: form.description || undefined,
+        descriptionUr: form.descriptionUr || undefined,
         imageUrl: imageUrl ?? undefined,
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["menu-items"] });
-      setForm({ name: "", basePrice: "", categoryId: catFilter, description: "" });
+      setForm({ name: "", nameUr: "", basePrice: "", categoryId: catFilter, description: "", descriptionUr: "" });
       setImageUrl(null);
       setShowForm(false);
       toast.success("Item created");
@@ -120,8 +122,12 @@ function ItemsContent() {
           <h2 className="font-semibold text-zinc-900">New Menu Item</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">Name *</label>
+              <label className="label">Name (English) *</label>
               <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            </div>
+            <div>
+              <label className="label">نام (اردو)</label>
+              <input className="input text-right" dir="rtl" placeholder="اردو نام" value={form.nameUr} onChange={(e) => setForm({ ...form, nameUr: e.target.value })} />
             </div>
             <div>
               <label className="label">Base Price *</label>
@@ -135,8 +141,12 @@ function ItemsContent() {
               </select>
             </div>
             <div>
-              <label className="label">Description</label>
+              <label className="label">Description (English)</label>
               <input className="input" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+            <div>
+              <label className="label">تفصیل (اردو)</label>
+              <input className="input text-right" dir="rtl" placeholder="اردو تفصیل" value={form.descriptionUr} onChange={(e) => setForm({ ...form, descriptionUr: e.target.value })} />
             </div>
           </div>
 

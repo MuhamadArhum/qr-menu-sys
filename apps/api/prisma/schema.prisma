@@ -214,6 +214,7 @@ model Category {
   restaurantId     String
   parentCategoryId String?
   name             String
+  nameUr           String?
   imageUrl         String?
   sortOrder        Int        @default(0)
   status           Status     @default(ACTIVE)
@@ -236,7 +237,9 @@ model MenuItem {
   restaurantId    String
   categoryId      String
   name            String
+  nameUr          String?
   description     String?
+  descriptionUr   String?
   basePrice       Decimal            @db.Decimal(10, 2)
   imageUrl        String?
   calories        Int?

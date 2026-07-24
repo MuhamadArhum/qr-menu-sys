@@ -22,8 +22,20 @@ export class UpdateMenuItemDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(120)
+  nameUr?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   @MaxLength(500)
   description?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  descriptionUr?: string;
 
   @ApiPropertyOptional({ example: 13.99 })
   @IsOptional()
