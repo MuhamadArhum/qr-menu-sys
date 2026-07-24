@@ -188,7 +188,7 @@ function ItemCard({ item, currency, onOpen, t, lang }: {
           <Image src={item.imageUrl} alt={displayName} fill className="object-cover" sizes="80px" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-2xl font-black"
-            style={{ color: swatch, fontFamily: "Space Grotesk, sans-serif" }}>
+            style={{ color: swatch, fontFamily: "var(--display-font)" }}>
             {item.name[0]?.toUpperCase()}
           </div>
         )}
@@ -205,7 +205,7 @@ function ItemCard({ item, currency, onOpen, t, lang }: {
             {item.dietaryTags.map(tag => <DietBadge key={tag} tag={tag} />)}
           </div>
         )}
-        <h3 className="font-bold text-sm leading-snug" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
+        <h3 className="font-bold text-sm leading-snug" style={{ color: "var(--char)", fontFamily: "var(--display-font)" }}>
           {displayName}
         </h3>
         {displayDesc && (
@@ -284,7 +284,7 @@ function ItemModal({ item, currency, onClose, onAdd, t, lang }: {
             <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-7xl font-black"
-              style={{ color: swatch, fontFamily: "Space Grotesk, sans-serif", opacity: 0.6 }}>
+              style={{ color: swatch, fontFamily: "var(--display-font)", opacity: 0.6 }}>
               {item.name[0]?.toUpperCase()}
             </div>
           )}
@@ -296,7 +296,7 @@ function ItemModal({ item, currency, onClose, onAdd, t, lang }: {
         <div className="p-5 space-y-5">
           {/* Name + description + dietary */}
           <div>
-            <h2 className="text-xl font-black" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{modalName}</h2>
+            <h2 className="text-xl font-black" style={{ fontFamily: "var(--display-font)", color: "var(--char)" }}>{modalName}</h2>
             {modalDesc && <p className="text-sm mt-1 leading-relaxed" style={{ color: "var(--char-60)" }}>{modalDesc}</p>}
             {item.dietaryTags.length > 0 && (
               <div className="flex gap-1 flex-wrap mt-2">{item.dietaryTags.map(tag => <DietBadge key={tag} tag={tag} />)}</div>
@@ -323,7 +323,7 @@ function ItemModal({ item, currency, onClose, onAdd, t, lang }: {
           {item.variantGroups.map(grp => (
             <div key={grp.id}>
               <div className="flex items-center justify-between mb-3">
-                <span className="font-bold text-sm" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{grp.name}</span>
+                <span className="font-bold text-sm" style={{ fontFamily: "var(--display-font)", color: "var(--char)" }}>{grp.name}</span>
                 <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
                   style={grp.isRequired ? { background: "var(--chili)", color: "#fff" } : { background: "var(--char-10)", color: "var(--char-60)" }}>
                   {grp.isRequired ? t.required : t.optional}
@@ -360,7 +360,7 @@ function ItemModal({ item, currency, onClose, onAdd, t, lang }: {
           {item.addonGroups.map(grp => (
             <div key={grp.id}>
               <div className="flex items-center justify-between mb-3">
-                <span className="font-bold text-sm" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{grp.name}</span>
+                <span className="font-bold text-sm" style={{ fontFamily: "var(--display-font)", color: "var(--char)" }}>{grp.name}</span>
                 <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--char-10)", color: "var(--char-60)" }}>
                   {t.upTo} {grp.maxSelect}
                 </span>
@@ -402,7 +402,7 @@ function ItemModal({ item, currency, onClose, onAdd, t, lang }: {
               <button onClick={() => setQty(q => Math.max(1, q - 1))}
                 className="w-11 h-11 flex items-center justify-center text-xl font-light"
                 style={{ color: "var(--char-60)" }}>−</button>
-              <span className="w-9 text-center font-black" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>{qty}</span>
+              <span className="w-9 text-center font-black" style={{ color: "var(--char)", fontFamily: "var(--display-font)" }}>{qty}</span>
               <button onClick={() => setQty(q => q + 1)}
                 className="w-11 h-11 flex items-center justify-center text-xl font-light"
                 style={{ color: "var(--char-60)" }}>+</button>
@@ -457,7 +457,7 @@ function EstimateDrawer({ items, currency, restaurant, branch, onUpdateQty, onRe
             style={{ background: "var(--char)", display: "flex" }}>
             <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black"
               style={{ background: "var(--chili)" }}>{totalQty}</span>
-            <span style={{ fontFamily: "Space Grotesk, sans-serif" }}>{t.viewBill}</span>
+            <span style={{ fontFamily: "var(--display-font)" }}>{t.viewBill}</span>
             <span style={{ fontFamily: "JetBrains Mono, monospace" }}>{fmt(currency, total)}</span>
           </button>
         </div>
@@ -475,7 +475,7 @@ function EstimateDrawer({ items, currency, restaurant, branch, onUpdateQty, onRe
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-black" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>
+                  <h2 className="text-lg font-black" style={{ fontFamily: "var(--display-font)", color: "var(--char)" }}>
                     {t.estimatedBill}
                   </h2>
                   <p className="text-xs mt-0.5 font-medium" style={{ color: "var(--chili)" }}>{t.notAnOrder}</p>
@@ -491,7 +491,7 @@ function EstimateDrawer({ items, currency, restaurant, branch, onUpdateQty, onRe
                   <div key={item.cartId} className="rounded-2xl overflow-hidden" style={{ background: "var(--cream)" }}>
                     <div className="flex gap-3 p-3">
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
+                        <p className="font-semibold text-sm" style={{ color: "var(--char)", fontFamily: "var(--display-font)" }}>
                           {item.menuItemName}
                         </p>
                         {item.selectedVariants.map(v => (
@@ -511,7 +511,7 @@ function EstimateDrawer({ items, currency, restaurant, branch, onUpdateQty, onRe
                         <div className="flex items-center gap-1 rounded-xl overflow-hidden border" style={{ borderColor: "var(--char-20)", background: "var(--paper)" }}>
                           <button onClick={() => item.quantity > 1 ? onUpdateQty(item.cartId, item.quantity - 1) : onRemove(item.cartId)}
                             className="w-8 h-8 flex items-center justify-center text-base" style={{ color: "var(--char-60)" }}>−</button>
-                          <span className="w-6 text-center text-sm font-black" style={{ color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
+                          <span className="w-6 text-center text-sm font-black" style={{ color: "var(--char)", fontFamily: "var(--display-font)" }}>
                             {item.quantity}
                           </span>
                           <button onClick={() => onUpdateQty(item.cartId, item.quantity + 1)}
@@ -574,7 +574,7 @@ function EstimateDrawer({ items, currency, restaurant, branch, onUpdateQty, onRe
 
               <button onClick={() => setOpen(false)}
                 className="w-full py-4 rounded-2xl font-bold text-white"
-                style={{ background: "var(--chili)", fontFamily: "Space Grotesk, sans-serif" }}>
+                style={{ background: "var(--chili)", fontFamily: "var(--display-font)" }}>
                 {t.continueBrowsing}
               </button>
               <button onClick={() => { onClear(); setOpen(false); }}
@@ -599,7 +599,7 @@ function CategorySection({ category, currency, refs, onOpen, t, lang }: {
   const catName = (lang === "ur" && category.nameUr) ? category.nameUr : category.name;
   return (
     <section ref={el => { refs.current[category.id] = el; }} className="scroll-mt-28">
-      <h2 className="text-base font-black mb-2" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>
+      <h2 className="text-base font-black mb-2" style={{ fontFamily: "var(--display-font)", color: "var(--char)" }}>
         {catName}
       </h2>
       {category.menuItems.length > 0 && (
@@ -611,7 +611,7 @@ function CategorySection({ category, currency, refs, onOpen, t, lang }: {
           <div key={child.id} ref={el => { refs.current[child.id] = el; }} className="mt-5 scroll-mt-28">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-1 h-4 rounded-full" style={{ background: "var(--chili)" }} />
-              <h3 className="text-sm font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>{childName}</h3>
+              <h3 className="text-sm font-bold" style={{ fontFamily: "var(--display-font)", color: "var(--char)" }}>{childName}</h3>
             </div>
             <div>{child.menuItems.map(item => <ItemCard key={item.id} item={item} currency={currency} onOpen={onOpen} t={t} lang={lang} />)}</div>
           </div>
@@ -627,7 +627,7 @@ function Toast({ message }: { message: string }) {
   return (
     <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
       <div className="px-5 py-2.5 rounded-2xl text-sm font-semibold text-white shadow-xl"
-        style={{ background: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}>
+        style={{ background: "var(--char)", fontFamily: "var(--display-font)" }}>
         {message}
       </div>
     </div>
@@ -811,7 +811,7 @@ export function MenuView({ data, codeValue }: { data: MenuResponse; codeValue: s
           <button
             onClick={() => setLang(l => l === "en" ? "ur" : "en")}
             className="h-9 px-3 rounded-full flex items-center justify-center text-xs font-bold shadow-md backdrop-blur-sm"
-            style={{ background: "var(--paper)dd", color: "var(--char)", fontFamily: "Space Grotesk, sans-serif" }}
+            style={{ background: "var(--paper)dd", color: "var(--char)", fontFamily: "var(--display-font)" }}
           >
             {lang === "en" ? "اردو" : "EN"}
           </button>
@@ -827,12 +827,12 @@ export function MenuView({ data, codeValue }: { data: MenuResponse; codeValue: s
                 </div>
               ) : (
                 <div className="w-14 h-14 rounded-2xl shrink-0 flex items-center justify-center text-2xl font-black text-white"
-                  style={{ background: "var(--chili)", fontFamily: "Space Grotesk, sans-serif" }}>
+                  style={{ background: "var(--chili)", fontFamily: "var(--display-font)" }}>
                   {restaurant.displayName[0]}
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h1 className="font-black text-base leading-tight truncate" style={{ fontFamily: "Space Grotesk, sans-serif", color: "var(--char)" }}>
+                <h1 className="font-black text-base leading-tight truncate" style={{ fontFamily: "var(--display-font)", color: "var(--char)" }}>
                   {restaurant.displayName}
                 </h1>
                 {restaurant.description && (

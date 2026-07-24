@@ -1,10 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+  --display-font: "Space Grotesk", sans-serif;
   --char: #1c1710;
   --cream: #fff7ea;
   --paper: #fffdf8;
@@ -25,6 +26,13 @@
   --char-20: #f0ebe033;
   --char-10: #f0ebe01a;
   --chili-10: #ff46302a;
+}
+
+/* Urdu / RTL mode — switch display font to Noto Nastaliq Urdu */
+main[dir="rtl"] {
+  --display-font: "Noto Nastaliq Urdu", serif;
+  font-family: "Noto Nastaliq Urdu", serif;
+  line-height: 2;
 }
 
 @layer base {
