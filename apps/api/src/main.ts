@@ -1,6 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import compression from "compression";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
@@ -11,6 +12,7 @@ async function bootstrap() {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  app.use(compression());
   app.setGlobalPrefix("api/v1");
 
   app.useGlobalPipes(
