@@ -147,6 +147,74 @@ export class AnalyticsService {
     };
   }
 
+  // ─── Revenue stats ────────────────────────────────────────────────────────
+
+  async getRevenueStats(restaurantId: string, from?: string, to?: string) {
+    const dateFilter = this.buildDateFilter(from, to);
+    const where = {
+      restaurantId,
+      status: "SERVED" as const,
+      ...(dateFilter && { createdAt: dateFilter }),
+    };
+
+    const [totals, byBranch] = await Promise.all([
+      this.prisma.order.aggregate({
+        where,
+        _sum: { totalAmount: true },
+        _count: { id: true },
+      }),
+      this.prisma.order.groupBy({
+        by: ["branchId"],
+        where,
+        _sum: { totalAmount: true },
+        _count: { id: true },
+        orderBy: { _sum: { totalAmount: "desc" } },
+      }),
+    ]);
+
+    const branchIds = byBranch.map((b) => b.branchId);
+    const branches = await this.prisma.branch.findMany({
+      where: { id: { in: branchIds } },
+      select: { id: true, name: true },
+    });
+    const branchMap = Object.fromEntries(branches.map((b) => [b.id, b]));
+
+    const effectiveFrom = from ? new Date(from) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const effectiveTo = to ? new Date(to) : new Date();
+
+    const dailyRevenue = await this.prisma.$queryRaw<
+      { day: Date; revenue: number; orders: bigint }[]
+    >`
+      SELECT
+        DATE_TRUNC('day', created_at) AS day,
+        SUM(total_amount)             AS revenue,
+        COUNT(*)                      AS orders
+      FROM orders
+      WHERE restaurant_id = ${restaurantId}
+        AND status = 'SERVED'
+        AND created_at >= ${effectiveFrom}
+        AND created_at <= ${effectiveTo}
+      GROUP BY day
+      ORDER BY day ASC
+    `;
+
+    return {
+      totalRevenue: Number(totals._sum.totalAmount ?? 0),
+      totalOrders: totals._count.id,
+      byBranch: byBranch.map((b) => ({
+        branchId: b.branchId,
+        branchName: branchMap[b.branchId]?.name ?? "Unknown",
+        revenue: Number(b._sum.totalAmount ?? 0),
+        orders: b._count.id,
+      })),
+      daily: dailyRevenue.map((d) => ({
+        day: d.day,
+        revenue: Number(d.revenue),
+        orders: Number(d.orders),
+      })),
+    };
+  }
+
   // ─── Helpers ─────────────────────────────────────────────────────────────
 
   private buildDateFilter(from?: string, to?: string) {

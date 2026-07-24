@@ -38,4 +38,17 @@ export class AnalyticsController {
   menuSummary(@CurrentUser() user: AuthUser) {
     return this.analyticsService.getMenuSummary(user.restaurantId!);
   }
+
+  @Get("revenue")
+  @Roles(UserRole.RESTAURANT_ADMIN, UserRole.BRANCH_MANAGER)
+  @ApiOperation({ summary: "Revenue stats from served orders" })
+  @ApiQuery({ name: "from", required: false, example: "2026-01-01" })
+  @ApiQuery({ name: "to", required: false, example: "2026-12-31" })
+  revenue(
+    @CurrentUser() user: AuthUser,
+    @Query("from") from?: string,
+    @Query("to") to?: string,
+  ) {
+    return this.analyticsService.getRevenueStats(user.restaurantId!, from, to);
+  }
 }

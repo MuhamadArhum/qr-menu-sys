@@ -13,6 +13,7 @@ const NAV = [
   { href: "/subscriptions", label: "Subscriptions" },
   { href: "/plans",         label: "Plans"         },
   { href: "/audit",         label: "Audit Log"     },
+  { href: "/cms",           label: "CMS"           },
 ];
 
 export function Navbar() {

@@ -59,4 +59,16 @@ export class UpdateMenuItemDto {
   @IsArray()
   @IsEnum(DietaryTag, { each: true })
   dietaryTags?: DietaryTag[];
+
+  @ApiPropertyOptional({ type: [String], example: ["Flour", "Tomato", "Mozzarella"] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  ingredients?: string[];
+
+  @ApiPropertyOptional({ type: [String], example: ["Gluten", "Dairy"] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  allergens?: string[];
 }

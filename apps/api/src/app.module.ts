@@ -19,6 +19,7 @@ import { AuditModule } from "./audit/audit.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
 import { StorageModule } from "./storage/storage.module";
 import { OrderModule } from "./order/order.module";
+import { CmsModule } from "./cms/cms.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 import { RolesGuard } from "./auth/guards/roles.guard";
 import { GlobalExceptionFilter } from "./common/filters/http-exception.filter";
@@ -47,6 +48,7 @@ import { GlobalExceptionFilter } from "./common/filters/http-exception.filter";
     AnalyticsModule,
     StorageModule,
     OrderModule,
+    CmsModule,
   ],
   providers: [
     // Global exception handler

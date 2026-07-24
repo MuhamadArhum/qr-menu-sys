@@ -15,6 +15,11 @@ export async function fetchMenu(codeValue: string) {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export interface TaxRate {
+  name: string;
+  rate: number;
+}
+
 export interface Restaurant {
   id: string;
   displayName: string;
@@ -24,7 +29,7 @@ export interface Restaurant {
   defaultCurrency: string;
   accentColor: string;
   themeDefault: string;
-  taxRates: unknown;
+  taxRates: TaxRate[] | null;
   serviceCharge: string;
   serviceChargeEnabled: boolean;
 }
@@ -72,6 +77,8 @@ export interface MenuItem {
   calories: number | null;
   prepTimeMinutes: number | null;
   dietaryTags: string[];
+  ingredients: string[];
+  allergens: string[];
   availability: "AVAILABLE" | "SOLD_OUT" | "HIDDEN";
   sortOrder: number;
   variantGroups: VariantGroup[];
@@ -89,7 +96,15 @@ export interface Category {
 
 export interface MenuResponse {
   restaurant: Restaurant;
-  branch: { id: string; name: string; businessHours: unknown };
+  branch: {
+    id: string;
+    name: string;
+    address: string;
+    businessHours: unknown;
+    taxOverride: TaxRate[] | null;
+    serviceChargeOverride: string | null;
+    serviceChargeEnabled: boolean | null;
+  };
   table: { id: string; label: string; capacity: number | null };
   menu: Category[];
 }

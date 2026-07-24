@@ -99,7 +99,11 @@ export class PublicMenuService {
       branch: {
         id: branch.id,
         name: branch.name,
+        address: branch.address,
         businessHours: branch.businessHours,
+        taxOverride: branch.taxOverride ?? null,
+        serviceChargeOverride: branch.serviceChargeOverride?.toString() ?? null,
+        serviceChargeEnabled: branch.serviceChargeEnabled ?? null,
       },
       table: {
         id: table.id,
@@ -120,6 +124,8 @@ const itemSelect = {
   calories: true,
   prepTimeMinutes: true,
   dietaryTags: true,
+  ingredients: true,
+  allergens: true,
   availability: true,
   sortOrder: true,
   variantGroups: {

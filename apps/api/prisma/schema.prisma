@@ -242,6 +242,8 @@ model MenuItem {
   calories        Int?
   prepTimeMinutes Int?
   dietaryTags     DietaryTag[]
+  ingredients     String[]           @default([])
+  allergens       String[]           @default([])
   availability    AvailabilityStatus @default(AVAILABLE)
   status          Status             @default(ACTIVE)
   sortOrder       Int                @default(0)
@@ -458,4 +460,18 @@ model AuditLogEntry {
   @@index([restaurantId])
   @@index([entityType, entityId])
   @@map("audit_log_entries")
+}
+
+// ─── CMS Pages ────────────────────────────────────────────────────────────────
+
+model CmsPage {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  body      String   @default("")
+  status    Status   @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cms_pages")
 }

@@ -17,6 +17,16 @@
   --chili-10: #ff46301a;
 }
 
+:root[data-theme="dark"] {
+  --char: #f0ebe0;
+  --cream: #221e18;
+  --paper: #161310;
+  --char-60: #f0ebe099;
+  --char-20: #f0ebe033;
+  --char-10: #f0ebe01a;
+  --chili-10: #ff46302a;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
