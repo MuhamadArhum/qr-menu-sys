@@ -12,6 +12,9 @@ const BASE = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001") + "/ap
 interface MenuItem {
   id: string;
   name: string;
+  nameUr?: string | null;
+  description?: string | null;
+  descriptionUr?: string | null;
   basePrice: string;
   availability: string;
   status: string;
@@ -22,11 +25,117 @@ interface MenuItem {
 
 interface Category { id: string; name: string }
 
+interface EditForm {
+  name: string;
+  nameUr: string;
+  basePrice: string;
+  categoryId: string;
+  description: string;
+  descriptionUr: string;
+}
+
+// ─── Edit Modal ───────────────────────────────────────────────────────────────
+
+function EditModal({
+  item,
+  categories,
+  onClose,
+  onSaved,
+}: {
+  item: MenuItem;
+  categories: Category[];
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [form, setForm] = useState<EditForm>({
+    name: item.name,
+    nameUr: item.nameUr ?? "",
+    basePrice: parseFloat(item.basePrice).toString(),
+    categoryId: item.categoryId,
+    description: item.description ?? "",
+    descriptionUr: item.descriptionUr ?? "",
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: () =>
+      api.patch(`/menu-items/${item.id}`, {
+        name: form.name,
+        nameUr: form.nameUr || undefined,
+        basePrice: parseFloat(form.basePrice),
+        categoryId: form.categoryId,
+        description: form.description || undefined,
+        descriptionUr: form.descriptionUr || undefined,
+      }),
+    onSuccess: () => {
+      toast.success("Item updated");
+      onSaved();
+      onClose();
+    },
+    onError: () => toast.error("Failed to update item"),
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 mx-4">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-bold text-zinc-900">Edit Item</h2>
+          <button onClick={onClose} className="text-zinc-400 hover:text-zinc-600 text-2xl leading-none">×</button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label">Name (English) *</label>
+            <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">نام (اردو)</label>
+            <input className="input text-right" dir="rtl" placeholder="اردو نام" value={form.nameUr} onChange={(e) => setForm({ ...form, nameUr: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">Base Price (PKR) *</label>
+            <input type="number" step="0.01" className="input" value={form.basePrice} onChange={(e) => setForm({ ...form, basePrice: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">Category *</label>
+            <select className="input" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}>
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="label">Description (English)</label>
+            <input className="input" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">تفصیل (اردو)</label>
+            <input className="input text-right" dir="rtl" placeholder="اردو تفصیل" value={form.descriptionUr} onChange={(e) => setForm({ ...form, descriptionUr: e.target.value })} />
+          </div>
+        </div>
+
+        <div className="flex gap-2 mt-5">
+          <button
+            className="btn-primary flex-1"
+            disabled={!form.name || !form.basePrice || !form.categoryId || updateMutation.isPending}
+            onClick={() => updateMutation.mutate()}
+          >
+            {updateMutation.isPending ? "Saving…" : "Save Changes"}
+          </button>
+          <button className="btn-secondary" onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 function ItemsContent() {
   const qc = useQueryClient();
   const searchParams = useSearchParams();
   const catFilter = searchParams.get("categoryId") ?? "";
+
   const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [form, setForm] = useState({ name: "", nameUr: "", basePrice: "", categoryId: catFilter, description: "", descriptionUr: "" });
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
@@ -150,7 +259,6 @@ function ItemsContent() {
             </div>
           </div>
 
-          {/* Image upload */}
           <div>
             <label className="label">Item Image</label>
             <input
@@ -192,7 +300,23 @@ function ItemsContent() {
 
       {/* Items table */}
       {isLoading ? (
-        <div className="card p-8 text-center text-zinc-400">Loading…</div>
+        <div className="card overflow-hidden animate-pulse">
+          <div className="bg-zinc-50 border-b border-zinc-100 flex gap-4 px-4 py-3">
+            {[40, 180, 80, 110, 90, 120].map((w, i) => (
+              <div key={i} className="h-3 rounded bg-zinc-200" style={{ width: w }} />
+            ))}
+          </div>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 px-4 py-3.5 border-b border-zinc-100 last:border-0">
+              <div className="w-10 h-10 rounded-lg bg-zinc-100 shrink-0" />
+              <div className="h-3 rounded bg-zinc-100" style={{ width: 140 + (i % 3) * 20 }} />
+              <div className="h-3 w-16 rounded bg-zinc-100" />
+              <div className="h-6 w-24 rounded-lg bg-zinc-100" />
+              <div className="h-3 w-12 rounded bg-zinc-100" />
+              <div className="h-3 w-28 rounded bg-zinc-100 ml-auto" />
+            </div>
+          ))}
+        </div>
       ) : items.length === 0 ? (
         <div className="card p-12 text-center">
           <p className="text-3xl mb-2">🍽</p>
@@ -221,8 +345,11 @@ function ItemsContent() {
                       <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-300 text-xs">No img</div>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-medium text-zinc-900">{item.name}</td>
-                  <td className="px-4 py-3 text-zinc-600">{parseFloat(item.basePrice).toFixed(2)}</td>
+                  <td className="px-4 py-3">
+                    <p className="font-medium text-zinc-900">{item.name}</p>
+                    {item.nameUr && <p className="text-xs text-zinc-400 mt-0.5" dir="rtl">{item.nameUr}</p>}
+                  </td>
+                  <td className="px-4 py-3 text-zinc-600">PKR {parseFloat(item.basePrice).toFixed(0)}</td>
                   <td className="px-4 py-3">
                     <select
                       className="text-xs border border-zinc-200 rounded-lg px-2 py-1 bg-white"
@@ -239,6 +366,12 @@ function ItemsContent() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-3">
+                      <button
+                        onClick={() => setEditingItem(item)}
+                        className="text-xs text-emerald-600 hover:text-emerald-800 font-medium"
+                      >
+                        Edit
+                      </button>
                       <Link
                         href={`/menu/items/${item.id}`}
                         className="text-xs text-blue-500 hover:text-blue-700 font-medium"
@@ -258,6 +391,16 @@ function ItemsContent() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingItem && (
+        <EditModal
+          item={editingItem}
+          categories={categories}
+          onClose={() => setEditingItem(null)}
+          onSaved={() => qc.invalidateQueries({ queryKey: ["menu-items"] })}
+        />
       )}
     </div>
   );
